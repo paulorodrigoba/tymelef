@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Paciente</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <h1>🏥 Clínica de Saúde</h1>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a th:href="@{/pacientes}">Pacientes</a> › 
+            <span th:text="${paciente.nome}">Nome</span>
+        </div>
+
+        <h2 th:text="${paciente.nome}">Nome do Paciente</h2>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Informações Pessoais</h3>
+            </div>
+            <div class="card-body">
+                <div class="info-row">
+                    <span class="label">ID:</span>
+                    <span th:text="${paciente.id}">1</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">CPF:</span>
+                    <span th:text="${paciente.cpf ? paciente.cpf : 'Não informado'}">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Data de Nascimento:</span>
+                    <span th:text="${paciente.dataNascimento ? #temporals.format(paciente.dataNascimento, 'dd/MM/yyyy') : 'Não informada'}">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Status:</span>
+                    <span th:if="${paciente.ativo}" class="badge badge-ativo">Ativo</span>
+                    <span th:unless="${paciente.ativo}" class="badge badge-inativo">Inativo</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Contato</h3>
+            </div>
+            <div class="card-body">
+                <div class="info-row">
+                    <span class="label">Email:</span>
+                    <span th:text="${paciente.email ? paciente.email : 'Não informado'}">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Telefone:</span>
+                    <span th:text="${paciente.telefone ? paciente.telefone : 'Não informado'}">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>Endereço</h3>
+            </div>
+            <div class="card-body">
+                <div class="info-row">
+                    <span class="label">Endereço:</span>
+                    <span th:text="${paciente.endereco ? paciente.endereco : 'Não informado'}">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Cidade:</span>
+                    <span th:text="${paciente.cidade ? paciente.cidade : 'Não informada'}">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Estado:</span>
+                    <span th:text="${paciente.estado ? paciente.estado : 'Não informado'}">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">CEP:</span>
+                    <span th:text="${paciente.cep ? paciente.cep : 'Não informado'}">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" th:if="${paciente.observacoes}">
+            <div class="card-header">
+                <h3>Observações</h3>
+            </div>
+            <div class="card-body">
+                <p th:text="${paciente.observacoes}"></p>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <a th:href="@{/pacientes/{id}/editar(id=${paciente.id})}" class="btn btn-warning">✏️ Editar</a>
+            <a th:href="@{/pacientes/{id}/deletar(id=${paciente.id})}" 
+               class="btn btn-danger"
+               onclick="return confirm('Tem certeza que deseja deletar este paciente?')">🗑️ Deletar</a>
+            <a th:href="@{/pacientes}" class="btn btn-secondary">Voltar</a>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Clínica - Centro Universitário Fametro</p>
+    </footer>
+</body>
+</html>
