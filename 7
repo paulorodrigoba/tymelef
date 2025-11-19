@@ -1,0 +1,149 @@
+package com.fametro.clinica.controller;
+
+import com.fametro.clinica.model.Paciente;
+import com.fametro.clinica.service.PacienteService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.List;
+import java.util.Optional;
+
+@Controller
+@RequestMapping("/pacientes")
+public class PacienteController {
+
+    @Autowired
+    private PacienteService pacienteService;
+
+    // READ - Listar todos os pacientes
+    @GetMapping
+    public String listarPacientes(
+            @RequestParam(value = "busca", required = false) String busca,
+            Model model) {
+        
+        List<Paciente> pacientes;
+        
+        if (busca != null && !busca.isEmpty()) {
+            pacientes = pacienteService.buscarPorNome(busca);
+            model.addAttribute("busca", busca);
+        } else {
+            pacientes = pacienteService.listarTodos();
+        }
+        
+        model.addAttribute("pacientes", pacientes);
+        model.addAttribute("total", pacientes.size());
+        
+        return "pacientes/list";
+    }
+
+    // CREATE - Exibir formulário de criação
+    @GetMapping("/novo")
+    public String mostrarFormularioCriacao(Model model) {
+        model.addAttribute("paciente", new Paciente());
+        model.addAttribute("operacao", "Criar");
+        return "pacientes/create";
+    }
+
+    // CREATE - Salvar novo paciente
+    @PostMapping("/salvar")
+    public String salvarPaciente(
+            @ModelAttribute("paciente") Paciente paciente,
+            RedirectAttributes redirectAttributes) {
+        
+        try {
+            pacienteService.salvar(paciente);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", 
+                "Paciente " + paciente.getNome() + " cadastrado com sucesso!");
+            return "redirect:/pacientes";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("mensagemErro", e.getMessage());
+            return "redirect:/pacientes/novo";
+        }
+    }
+
+    // READ - Visualizar detalhes do paciente
+    @GetMapping("/{id}")
+    public String visualizarPaciente(@PathVariable("id") Long id, Model model) {
+        Optional<Paciente> paciente = pacienteService.buscarPorId(id);
+        
+        if (paciente.isEmpty()) {
+            return "redirect:/pacientes";
+        }
+        
+        model.addAttribute("paciente", paciente.get());
+        return "pacientes/view";
+    }
+
+    // UPDATE - Exibir formulário de edição
+    @GetMapping("/{id}/editar")
+    public String mostrarFormularioEdicao(@PathVariable("id") Long id, Model model) {
+        Optional<Paciente> paciente = pacienteService.buscarPorId(id);
+        
+        if (paciente.isEmpty()) {
+            return "redirect:/pacientes";
+        }
+        
+        model.addAttribute("paciente", paciente.get());
+        model.addAttribute("operacao", "Editar");
+        return "pacientes/edit";
+    }
+
+    // UPDATE - Atualizar paciente
+    @PostMapping("/{id}/atualizar")
+    public String atualizarPaciente(
+            @PathVariable("id") Long id,
+            @ModelAttribute("paciente") Paciente paciente,
+            RedirectAttributes redirectAttributes) {
+        
+        try {
+            paciente.setId(id);
+            pacienteService.atualizar(paciente);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", 
+                "Paciente " + paciente.getNome() + " atualizado com sucesso!");
+            return "redirect:/pacientes/{id}";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("mensagemErro", e.getMessage());
+            return "redirect:/pacientes/{id}/editar";
+        }
+    }
+
+    // DELETE - Deletar paciente
+    @GetMapping("/{id}/deletar")
+    public String deletarPaciente(
+            @PathVariable("id") Long id,
+            RedirectAttributes redirectAttributes) {
+        
+        try {
+            Optional<Paciente> paciente = pacienteService.buscarPorId(id);
+            if (paciente.isPresent()) {
+                String nome = paciente.get().getNome();
+                pacienteService.deletar(id);
+                redirectAttributes.addFlashAttribute("mensagemSucesso", 
+                    "Paciente " + nome + " deletado com sucesso!");
+            }
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("mensagemErro", e.getMessage());
+        }
+        
+        return "redirect:/pacientes";
+    }
+
+    // Desativar paciente (exclusão lógica)
+    @GetMapping("/{id}/desativar")
+    public String desativarPaciente(
+            @PathVariable("id") Long id,
+            RedirectAttributes redirectAttributes) {
+        
+        try {
+            pacienteService.desativar(id);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", 
+                "Paciente desativado com sucesso!");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("mensagemErro", e.getMessage());
+        }
+        
+        return "redirect:/pacientes";
+    }
+}
