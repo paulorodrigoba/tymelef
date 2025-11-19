@@ -1,0 +1,29 @@
+clinica-pacientes/
+├── src/
+│   ├── main/
+│   │   ├── java/com/fametro/clinica/
+│   │   │   ├── ClinicaApplication.java
+│   │   │   ├── model/
+│   │   │   │   └── Paciente.java
+│   │   │   ├── repository/
+│   │   │   │   └── PacienteRepository.java
+│   │   │   ├── service/
+│   │   │   │   └── PacienteService.java
+│   │   │   └── controller/
+│   │   │       └── PacienteController.java
+│   │   └── resources/
+│   │       ├── templates/
+│   │       │   ├── pacientes/
+│   │       │   │   ├── list.html
+│   │       │   │   ├── create.html
+│   │       │   │   ├── edit.html
+│   │       │   │   └── view.html
+│   │       │   ├── layout/
+│   │       │   │   └── base.html
+│   │       │   └── index.html
+│   │       ├── static/
+│   │       │   └── css/
+│   │       │       └── style.css
+│   │       └── application.properties
+│   └── test/...
+└── pom.xml
