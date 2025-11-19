@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Pacientes</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <h1>🏥 Clínica de Saúde</h1>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h2>Pacientes Cadastrados</h2>
+
+        <!-- Mensagens -->
+        <div th:if="${mensagemSucesso}" class="alert alert-success">
+            <span th:text="${mensagemSucesso}"></span>
+        </div>
+        <div th:if="${mensagemErro}" class="alert alert-error">
+            <span th:text="${mensagemErro}"></span>
+        </div>
+
+        <!-- Busca -->
+        <form method="get" class="search-form">
+            <input type="text" name="busca" 
+                   th:value="${busca}" 
+                   placeholder="Buscar por nome...">
+            <button type="submit">🔍 Buscar</button>
+            <a th:href="@{/pacientes}">Limpar</a>
+        </form>
+
+        <!-- Botão Novo Paciente -->
+        <div class="button-group">
+            <a th:href="@{/pacientes/novo}" class="btn btn-primary">+ Novo Paciente</a>
+        </div>
+
+        <!-- Total de registros -->
+        <p>Total de pacientes: <strong th:text="${total}">0</strong></p>
+
+        <!-- Tabela de pacientes -->
+        <div th:if="${pacientes.isEmpty()}" class="no-data">
+            <p>Nenhum paciente cadastrado.</p>
+            <a th:href="@{/pacientes/novo}">Cadastrar primeiro paciente</a>
+        </div>
+
+        <table th:unless="${pacientes.isEmpty()}" class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Telefone</th>
+                    <th>CPF</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="paciente : ${pacientes}">
+                    <td th:text="${paciente.id}">1</td>
+                    <td th:text="${paciente.nome}">João Silva</td>
+                    <td th:text="${paciente.email}">joao@email.com</td>
+                    <td th:text="${paciente.telefone}">11999999999</td>
+                    <td th:text="${paciente.cpf}">12345678901</td>
+                    <td>
+                        <span th:if="${paciente.ativo}" class="badge badge-ativo">Ativo</span>
+                        <span th:unless="${paciente.ativo}" class="badge badge-inativo">Inativo</span>
+                    </td>
+                    <td class="actions">
+                        <a th:href="@{/pacientes/{id}(id=${paciente.id})}" class="btn-sm btn-info">👁️ Ver</a>
+                        <a th:href="@{/pacientes/{id}/editar(id=${paciente.id})}" class="btn-sm btn-warning">✏️ Editar</a>
+                        <a th:href="@{/pacientes/{id}/deletar(id=${paciente.id})}" 
+                           class="btn-sm btn-danger"
+                           onclick="return confirm('Tem certeza que deseja deletar este paciente?')">🗑️ Deletar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Clínica - Centro Universitário Fametro</p>
+    </footer>
+</body>
+</html>
