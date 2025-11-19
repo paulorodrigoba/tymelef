@@ -1,0 +1,124 @@
+package com.fametro.clinica.service;
+
+import com.fametro.clinica.model.Paciente;
+import com.fametro.clinica.repository.PacienteRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class PacienteService {
+
+    @Autowired
+    private PacienteRepository pacienteRepository;
+
+    // CREATE - Salvar novo paciente
+    @Transactional
+    public Paciente salvar(Paciente paciente) {
+        // Validações
+        if (paciente.getNome() == null || paciente.getNome().trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome é obrigatório");
+        }
+
+        if (paciente.getCpf() != null && !paciente.getCpf().isEmpty()) {
+            // Verificar CPF duplicado
+            Optional<Paciente> pacienteCPF = pacienteRepository.findByCpf(paciente.getCpf());
+            if (pacienteCPF.isPresent() && 
+                !pacienteCPF.get().getId().equals(paciente.getId())) {
+                throw new IllegalArgumentException("CPF já cadastrado no sistema");
+            }
+        }
+
+        if (paciente.getEmail() != null && !paciente.getEmail().isEmpty()) {
+            // Validar formato de email
+            if (!paciente.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                throw new IllegalArgumentException("Email inválido");
+            }
+        }
+
+        return pacienteRepository.save(paciente);
+    }
+
+    // READ - Listar todos os pacientes
+    public List<Paciente> listarTodos() {
+        return pacienteRepository.findAll();
+    }
+
+    // READ - Listar apenas ativos
+    public List<Paciente> listarAtivos() {
+        return pacienteRepository.findByAtivo(true);
+    }
+
+    // READ - Buscar por ID
+    public Optional<Paciente> buscarPorId(Long id) {
+        return pacienteRepository.findById(id);
+    }
+
+    // READ - Buscar por CPF
+    public Optional<Paciente> buscarPorCpf(String cpf) {
+        return pacienteRepository.findByCpf(cpf);
+    }
+
+    // READ - Buscar por nome
+    public List<Paciente> buscarPorNome(String nome) {
+        return pacienteRepository.findByNomeContainingIgnoreCase(nome);
+    }
+
+    // UPDATE - Atualizar paciente
+    @Transactional
+    public Paciente atualizar(Paciente paciente) {
+        if (!pacienteRepository.existsById(paciente.getId())) {
+            throw new IllegalArgumentException("Paciente com ID " + paciente.getId() + " não encontrado");
+        }
+
+        // Validações (similar ao salvar)
+        if (paciente.getNome() == null || paciente.getNome().trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome é obrigatório");
+        }
+
+        if (paciente.getEmail() != null && !paciente.getEmail().isEmpty()) {
+            if (!paciente.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                throw new IllegalArgumentException("Email inválido");
+            }
+        }
+
+        return pacienteRepository.save(paciente);
+    }
+
+    // DELETE - Deletar paciente (exclusão física)
+    @Transactional
+    public void deletar(Long id) {
+        if (!pacienteRepository.existsById(id)) {
+            throw new IllegalArgumentException("Paciente com ID " + id + " não encontrado");
+        }
+        pacienteRepository.deleteById(id);
+    }
+
+    // DELETE - Desativar paciente (exclusão lógica)
+    @Transactional
+    public void desativar(Long id) {
+        Optional<Paciente> paciente = pacienteRepository.findById(id);
+        if (paciente.isPresent()) {
+            Paciente p = paciente.get();
+            p.setAtivo(false);
+            pacienteRepository.save(p);
+        } else {
+            throw new IllegalArgumentException("Paciente com ID " + id + " não encontrado");
+        }
+    }
+
+    // Reativar paciente
+    @Transactional
+    public void reativar(Long id) {
+        Optional<Paciente> paciente = pacienteRepository.findById(id);
+        if (paciente.isPresent()) {
+            Paciente p = paciente.get();
+            p.setAtivo(true);
+            pacienteRepository.save(p);
+        } else {
+            throw new IllegalArgumentException("Paciente com ID " + id + " não encontrado");
+        }
+    }
+}
