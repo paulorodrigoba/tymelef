@@ -1,0 +1,23 @@
+package com.fametro.clinica.repository;
+
+import com.fametro.clinica.model.Paciente;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface PacienteRepository extends JpaRepository<Paciente, Long> {
+
+    // Buscar por CPF
+    Optional<Paciente> findByCpf(String cpf);
+
+    // Buscar por email
+    List<Paciente> findByEmail(String email);
+
+    // Buscar por nome (case-insensitive)
+    List<Paciente> findByNomeContainingIgnoreCase(String nome);
+
+    // Listar apenas pacientes ativos
+    List<Paciente> findByAtivo(Boolean ativo);
+}
