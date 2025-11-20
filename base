@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo != null ? titulo : 'Clínica - Gerenciamento de Pacientes'}">Clínica</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header>
+    <nav>
+        <div class="container">
+            <h1>🏥 Clínica de Saúde</h1>
+            <ul>
+                <li><a th:href="@{/}">Home</a></li>
+                <li><a th:href="@{/pacientes}">Pacientes</a></li>
+                <li><a th:href="@{/pacientes/novo}">Novo Paciente</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<main class="container">
+    <!-- Mensagens de sucesso -->
+    <div th:if="${mensagemSucesso}" class="alert alert-success" role="alert">
+        <strong>✓ Sucesso!</strong> <span th:text="${mensagemSucesso}"></span>
+    </div>
+
+    <!-- Mensagens de erro -->
+    <div th:if="${mensagemErro}" class="alert alert-error" role="alert">
+        <strong>✗ Erro!</strong> <span th:text="${mensagemErro}"></span>
+    </div>
+
+    <!-- Conteúdo específico da página -->
+    <div th:insert="~{content}"></div>
+</main>
+
+<footer>
+    <p>&copy; 2025 Clínica - Centro Universitário Fametro. Todos os direitos reservados.</p>
+</footer>
+</body>
+</html>
